@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAAC PRO V7</title>
+    <title>SAAC V7.1 - Gramática Pro</title>
     <style>
-        :root { --barra-color: #512DA8; --bg-color: #fafafa; } /* Colores más serios/pro */
+        :root { --barra-color: #512DA8; --bg-color: #fafafa; }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -66,8 +66,8 @@
             color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.2); letter-spacing: 1px;
         }
         button.accion:active { transform: scale(0.96); }
-        #btn-hablar { background-color: #00C853; } /* Verde vibrante */
-        #btn-borrar { background-color: #FF1744; } /* Rojo vibrante */
+        #btn-hablar { background-color: #00C853; }
+        #btn-borrar { background-color: #FF1744; }
 
         #tablero {
             flex: 1; padding: 15px; overflow-y: auto; display: grid;
@@ -85,7 +85,6 @@
         .tarjeta-picto .emoji { font-size: 40px; margin-bottom: 5px; }
         .tarjeta-picto .label { font-size: 13px; font-weight: bold; text-align: center; color: #444; line-height: 1.1; }
 
-        /* Categorías visuales */
         .cat-persona { border-top: 5px solid #FFD600; }
         .cat-accion { border-top: 5px solid #2962FF; }
         .cat-objeto { border-top: 5px solid #00C853; }
@@ -97,12 +96,8 @@
     <div id="pantalla-inicio">
         <div class="titulo-inicio">¡Hola! 👋<br>¿Quién va a hablar hoy?</div>
         <div class="contenedor-botones-inicio">
-            <button class="btn-genero" onclick="iniciarApp('nino')">
-                <span>👦</span><strong>Niño</strong>
-            </button>
-            <button class="btn-genero" onclick="iniciarApp('nina')">
-                <span>👧</span><strong>Niña</strong>
-            </button>
+            <button class="btn-genero" onclick="iniciarApp('nino')"><span>👦</span><strong>Niño</strong></button>
+            <button class="btn-genero" onclick="iniciarApp('nina')"><span>👧</span><strong>Niña</strong></button>
         </div>
         <div id="info-debug" style="font-size: 10px; opacity: 0.7; position: absolute; bottom: 10px;"></div>
     </div>
@@ -119,15 +114,12 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE DATOS (CONECTORES ESTRICTOS) ---
         const pictogramas = [
-            // PERSONAS
             { id: 'yo', texto: "Yo", hablar: "Yo", emoji: "🙋‍♂️", tipo: "persona" }, 
             { texto: "Tú", hablar: "Tú", emoji: "👉", tipo: "persona" },
             { texto: "Mamá", hablar: "Mamá", emoji: "👩", tipo: "persona" },
             { texto: "Papá", hablar: "Papá", emoji: "👨", tipo: "persona" },
 
-            // ACCIONES
             { texto: "Quiero", hablar: "quiero", emoji: "🤲", tipo: "accion" },
             { texto: "Ir", hablar: "ir", emoji: "🚶", tipo: "accion" },
             { texto: "Comer", hablar: "comer", emoji: "🍎", tipo: "accion" },
@@ -136,7 +128,6 @@
             { texto: "Dormir", hablar: "dormir", emoji: "😴", tipo: "accion" },
             { texto: "Ver", hablar: "ver", emoji: "👀", tipo: "accion" },
 
-            // OBJETOS (Asegúrate que 'hablar' tenga el conector)
             { texto: "Baño", hablar: "al baño", emoji: "🚽", tipo: "objeto" },
             { texto: "Parque", hablar: "al parque", emoji: "🛝", tipo: "objeto" },
             { texto: "Casa", hablar: "a casa", emoji: "🏠", tipo: "objeto" },
@@ -145,7 +136,6 @@
             { texto: "Agua", hablar: "agua", emoji: "💧", tipo: "objeto" },
             { texto: "Comida", hablar: "comida", emoji: "🍔", tipo: "objeto" },
             
-            // EMOCIONES
             { texto: "Feliz", hablar: "estoy feliz", emoji: "😊", tipo: "emocion" },
             { texto: "Triste", hablar: "estoy triste", emoji: "😢", tipo: "emocion" },
             { id: 'enojado', texto: "Enojado", hablar: "estoy enojado", emoji: "😡", tipo: "emocion" },
@@ -153,27 +143,20 @@
             { texto: "No", hablar: "no", emoji: "❌", tipo: "emocion" }
         ];
 
-        // --- VARIABLES GLOBALES ---
-        let fraseActual = []; // Guardará objetos completos
+        let fraseActual = []; 
         const synth = window.speechSynthesis;
         let vozSeleccionada = null;
         let generoSeleccionado = 'nino';
-        let pitchGlobal = 1.0; // Tono base
+        let pitchGlobal = 1.0;
 
-        // --- INICIAR APP ---
         function iniciarApp(genero) {
             generoSeleccionado = genero;
-            document.getElementById('pantalla-inicio').style.transform = 'translateY(-100%)'; // Animación suave
+            document.getElementById('pantalla-inicio').style.transform = 'translateY(-100%)';
             
-            // Configurar personalización según género
             if (genero === 'nina') {
-                pitchGlobal = 1.3; // Tono más agudo (voz femenina/niña)
-                
-                // Cambiar Emoji YO
+                pitchGlobal = 1.3; 
                 const pictoYo = pictogramas.find(p => p.id === 'yo');
                 if (pictoYo) pictoYo.emoji = '🙋‍♀️';
-
-                // Cambiar Enojada
                 const pictoEnojado = pictogramas.find(p => p.id === 'enojado');
                 if (pictoEnojado) {
                     pictoEnojado.texto = 'Enojada';
@@ -181,10 +164,9 @@
                     pictoEnojado.emoji = '🙍‍♀️';
                 }
             } else {
-                pitchGlobal = 0.9; // Tono más grave (voz niño/normal)
+                pitchGlobal = 0.9;
             }
 
-            // Damos tiempo al navegador para cargar las voces
             setTimeout(() => {
                 document.getElementById('app-principal').style.display = 'flex';
                 cargarVoces();
@@ -192,52 +174,37 @@
             }, 300);
         }
 
-        // --- GESTIÓN DE VOCES (Lógica Pro) ---
         function cargarVoces() {
             const voces = synth.getVoices();
-            if (voces.length === 0) return; // Si aún no cargan, esperar
-
-            // Buscamos voces de Google (calidad alta)
-            // Prioridad: Google Español > Cualquier Español
+            if (voces.length === 0) return;
             let vozEncontrada = voces.find(v => v.name.includes('Google') && v.lang.includes('es'));
-            
-            if (!vozEncontrada) {
-                vozEncontrada = voces.find(v => v.lang.includes('es'));
-            }
-
+            if (!vozEncontrada) vozEncontrada = voces.find(v => v.lang.includes('es'));
             if (vozEncontrada) {
                 vozSeleccionada = vozEncontrada;
-                // Debug para saber qué está usando
-                console.log("Voz activa: " + vozSeleccionada.name);
                 document.getElementById('info-debug').innerText = "Voz: " + vozSeleccionada.name;
             }
         }
 
-        // Listener para Chrome que carga voces asíncronamente
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = cargarVoces;
         }
 
-        // --- RENDERIZADO DEL TABLERO ---
         function renderizarTablero() {
             const tablero = document.getElementById('tablero');
             tablero.innerHTML = ''; 
             pictogramas.forEach(picto => {
                 const btn = document.createElement('div');
                 btn.className = `tarjeta-picto cat-${picto.tipo}`;
-                // Usamos el emoji y el texto corto para el botón
                 btn.innerHTML = `<span class="emoji">${picto.emoji}</span><span class="label">${picto.texto}</span>`;
                 btn.onclick = () => agregarAFrase(picto);
-                // Efecto de click
                 btn.onmousedown = () => btn.style.transform = "scale(0.95)";
                 btn.onmouseup = () => btn.style.transform = "scale(1)";
                 tablero.appendChild(btn);
             });
         }
 
-        // --- LÓGICA DE LA FRASE ---
         function agregarAFrase(picto) {
-            fraseActual.push(picto); // Guardamos el objeto completo
+            fraseActual.push(picto);
             actualizarVisualizador();
         }
 
@@ -245,17 +212,18 @@
             const visualizador = document.getElementById('visualizador-frase');
             visualizador.innerHTML = ''; 
 
-            fraseActual.forEach(picto => {
+            fraseActual.forEach((picto, index) => {
                 const elemento = document.createElement('div');
                 elemento.className = 'picto-en-frase';
-                // AQUÍ ESTÁ LA CLAVE DEL "AL BAÑO":
-                // Mostramos 'picto.hablar' si existe, para que visualmente veas "al baño"
-                const textoMostrar = picto.hablar ? picto.hablar : picto.texto;
                 
+                // LÓGICA VISUAL: Si es "Ir" y viene una acción, mostramos una pequeña flecha o indicio
+                let conectorVisual = "";
+                // No mostramos la 'a' visualmente para no saturar al niño, pero se escuchará.
+                
+                const textoMostrar = picto.hablar ? picto.hablar : picto.texto;
                 elemento.innerHTML = `<span>${picto.emoji}</span><small>${textoMostrar}</small>`;
                 visualizador.appendChild(elemento);
             });
-            // Scroll automático al final
             visualizador.scrollTop = visualizador.scrollHeight;
             visualizador.scrollLeft = visualizador.scrollWidth;
         }
@@ -265,25 +233,37 @@
             actualizarVisualizador();
         }
 
-        // --- REPRODUCCIÓN DE AUDIO ---
+        // --- MOTOR DE GRAMÁTICA INTELIGENTE ---
         function reproducirFrase() {
             if (fraseActual.length === 0) return;
 
-            // Construir la frase usando SIEMPRE la propiedad 'hablar' (conectores)
-            const textoHablado = fraseActual.map(p => p.hablar || p.texto).join(" ");
+            let fraseParaLeer = [];
 
-            // Cancelar cualquier audio anterior para que no se solapen
+            // Recorremos la frase para inyectar conectores
+            for (let i = 0; i < fraseActual.length; i++) {
+                const actual = fraseActual[i];
+                const siguiente = fraseActual[i + 1]; // Puede ser undefined si es el último
+
+                // 1. Agregamos la palabra actual
+                fraseParaLeer.push(actual.hablar || actual.texto);
+
+                // 2. REGLA MAESTRA: Si actual es "Ir" y siguiente es "Acción" -> Agregar "a"
+                if (actual.texto === 'Ir' && siguiente && siguiente.tipo === 'accion') {
+                    fraseParaLeer.push("a");
+                }
+            }
+
+            const textoFinal = fraseParaLeer.join(" ");
+
+            // Debug en consola para que veas qué está armando
+            console.log("Hablando: " + textoFinal);
+
             synth.cancel();
-
-            const utterThis = new SpeechSynthesisUtterance(textoHablado);
-            
-            // Asignar la voz encontrada
+            const utterThis = new SpeechSynthesisUtterance(textoFinal);
             if (vozSeleccionada) utterThis.voice = vozSeleccionada;
-            
             utterThis.lang = 'es-ES';
-            // Aplicar el tono según género seleccionado (EL TRUCO DE INGENIERO)
             utterThis.pitch = pitchGlobal; 
-            utterThis.rate = 0.9; // Velocidad un poco pausada para claridad
+            utterThis.rate = 0.9; 
 
             synth.speak(utterThis);
         }
