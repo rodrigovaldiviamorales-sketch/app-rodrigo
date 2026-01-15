@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAAC V5.1 - Género Corregido</title>
+    <style>
+        :root {
+            --barra-color: #673AB7;
+            --bg-color: #f0f2f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- PANTALLA DE INICIO --- */
+        #pantalla-inicio {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2196F3 0%, #9C27B0 100%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            color: white;
+            transition: top 0.5s ease-in-out;
+        }
+
+        #pantalla-inicio h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .contenedor-botones-inicio {
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-genero {
+            background: white;
+            border: none;
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 140px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-genero:active { transform: scale(0.95); }
+        .btn-genero span { font-size: 60px; margin-bottom: 10px; }
+        .btn-genero strong { font-size: 20px; color: #333; }
+
+        /* --- RESTO DE LA APP --- */
+        #app-principal {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        #frase-container {
+            background-color: var(--barra-color);
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #visualizador-frase {
+            min-height: 70px;
+            background-color: white;
+            border-radius: 12px;
+            border: 3px solid #b39ddb;
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .picto-en-frase {
+            background: #f3e5f5;
+            border-radius: 8px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #d1c4e9;
+            min-width: 55px;
+        }
+
+        .picto-en-frase span { font-size: 20px; }
+        .picto-en-frase small { font-size: 11px; font-weight: bold; margin-top: 2px; }
+
+        .controles { display: flex; gap: 10px; }
+
+        button.accion {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            color: white;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+        button.accion:active { transform: scale(0.98); }
+        #btn-hablar { background-color: #00E676; color: #003300; }
+        #btn-borrar { background-color: #FF5252; color: white; }
+
+        #tablero {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            grid-auto-rows: 100px;
+            gap: 10px;
+            align-content: start;
+        }
+
+        .tarjeta-picto {
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 4px solid #ddd;
+            transition: all 0.1s;
+        }
+        .tarjeta-picto:active { border-bottom: 0px solid #ddd; transform: translateY(4px); }
+        .tarjeta-picto .emoji { font-size: 35px; margin-bottom: 5px; }
+        .tarjeta-picto .label { font-size: 13px; font-weight: bold; text-align: center; color: #444; }
+
+        /* Colores categorías */
+        .cat-persona { border-top: 4px solid #FBC02D; background: linear-gradient(to bottom, #FFFDE7, white); }
+        .cat-accion { border-top: 4px solid #2196F3; background: linear-gradient(to bottom, #E3F2FD, white); }
+        .cat-objeto { border-top: 4px solid #4CAF50; background: linear-gradient(to bottom, #E8F5E9, white); }
+        .cat-emocion { border-top: 4px solid #9C27B0; background: linear-gradient(to bottom, #F3E5F5, white); }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-inicio">
+        <h1>¿Quién va a usar la App?</h1>
+        <div class="contenedor-botones-inicio">
+            <button class="btn-genero" onclick="iniciarApp('nino')">
+                <span>👦</span>
+                <strong>Niño</strong>
+            </button>
+            <button class="btn-genero" onclick="iniciarApp('nina')">
+                <span>👧</span>
+                <strong>Niña</strong>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-principal">
+        <div id="frase-container">
+            <div id="visualizador-frase"></div>
+            <div class="controles">
+                <button id="btn-borrar" class="accion" onclick="borrarFrase()">🗑️ Borrar</button>
+                <button id="btn-hablar" class="accion" onclick="reproducirFrase()">🔊 HABLAR</button>
+            </div>
+        </div>
+        <div id="tablero"></div>
+    </div>
+
+    <script>
+        // --- DATOS ---
+        const pictogramas = [
+            { id: 'yo', texto: "Yo", hablar: "Yo", emoji: "🙋‍♂️", tipo: "persona" }, 
+            { texto: "Tú", hablar: "Tú", emoji: "👉", tipo: "persona" },
+            { texto: "Mamá", hablar: "Mamá", emoji: "👩", tipo: "persona" },
+            { texto: "Papá", hablar: "Papá", emoji: "👨", tipo: "persona" },
+
+            { texto: "Quiero", hablar: "quiero", emoji: "🤲", tipo: "accion" },
+            { texto: "Ir", hablar: "ir", emoji: "🚶", tipo: "accion" },
+            { texto: "Comer", hablar: "comer", emoji: "🍎", tipo: "accion" },
+            { texto: "Beber", hablar: "beber", emoji: "🥛", tipo: "accion" },
+            { texto: "Jugar", hablar: "jugar", emoji: "⚽", tipo: "accion" },
+            { texto: "Dormir", hablar: "dormir", emoji: "😴", tipo: "accion" },
+            { texto: "Ver", hablar: "ver", emoji: "👀", tipo: "accion" },
+
+            { texto: "Baño", hablar: "al baño", emoji: "🚽", tipo: "objeto" },
+            { texto: "Parque", hablar: "al parque", emoji: "🛝", tipo: "objeto" },
+            { texto: "Casa", hablar: "a casa", emoji: "🏠", tipo: "objeto" },
+            { texto: "Colegio", hablar: "al colegio", emoji: "🏫", tipo: "objeto" },
+            { texto: "Tablet", hablar: "la tablet", emoji: "📱", tipo: "objeto" },
+            { texto: "Agua", hablar: "agua", emoji: "💧", tipo: "objeto" },
+            { texto: "Comida", hablar: "comida", emoji: "🍔", tipo: "objeto" },
+            
+            { texto: "Feliz", hablar: "estoy feliz", emoji: "😊", tipo: "emocion" },
+            { texto: "Triste", hablar: "estoy triste", emoji: "😢", tipo: "emocion" },
+            // AGREGE UN ID AQUI:
+            { id: 'enojado', texto: "Enojado", hablar: "estoy enojado", emoji: "😡", tipo: "emocion" },
+            { texto: "Sí", hablar: "sí", emoji: "✅", tipo: "emocion" },
+            { texto: "No", hablar: "no", emoji: "❌", tipo: "emocion" }
+        ];
+
+        let fraseAudio = []; 
+        let fraseVisual = []; 
+        const synth = window.speechSynthesis;
+        let vozSeleccionada = null;
+        let generoSeleccionado = 'nino';
+
+        // --- FUNCIÓN DE INICIO (Lógica actualizada) ---
+        function iniciarApp(genero) {
+            generoSeleccionado = genero;
+
+            document.getElementById('pantalla-inicio').style.top = '-100%';
+            document.getElementById('app-principal').style.display = 'flex';
+
+            // --- CAMBIOS DINÁMICOS SI ES NIÑA ---
+            if (genero === 'nina') {
+                // 1. Cambiar "Yo"
+                const pictoYo = pictogramas.find(p => p.id === 'yo');
+                if (pictoYo) pictoYo.emoji = '🙋‍♀️';
+
+                // 2. Cambiar "Enojado" a "Enojada" (Nuevo)
+                const pictoEnojado = pictogramas.find(p => p.id === 'enojado');
+                if (pictoEnojado) {
+                    pictoEnojado.texto = 'Enojada';
+                    pictoEnojado.hablar = 'estoy enojada';
+                    pictoEnojado.emoji = '🙍‍♀️'; // Usamos emoji de mujer frunciendo el ceño
+                }
+            }
+
+            cargarVoces();
+            renderizarTablero();
+        }
+
+        function cargarVoces() {
+            const voces = synth.getVoices();
+            let nombresMujer = ["Paulina", "Helena", "Laura", "Sabina", "Zira"];
+            let nombresHombre = ["David", "Pablo", "Raul", "Stefan"];
+            let vozPreferida = null;
+
+            if (generoSeleccionado === 'nina') {
+                vozPreferida = voces.find(voz => 
+                    nombresMujer.some(nombre => voz.name.includes(nombre)) && voz.lang.includes("es")
+                );
+                if (!vozPreferida) {
+                    vozPreferida = voces.find(voz => voz.name.includes("Google") && voz.lang.includes("es"));
+                }
+            } else {
+                vozPreferida = voces.find(voz => 
+                    nombresHombre.some(nombre => voz.name.includes(nombre)) && voz.lang.includes("es")
+                );
+            }
+
+            if (vozPreferida) {
+                vozSeleccionada = vozPreferida;
+                console.log(`Voz seleccionada (${generoSeleccionado}): ` + vozSeleccionada.name);
+            } else {
+                vozSeleccionada = voces.find(voz => voz.lang.includes("es"));
+            }
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = cargarVoces;
+        }
+
+        function renderizarTablero() {
+            const tablero = document.getElementById('tablero');
+            tablero.innerHTML = ''; 
+            pictogramas.forEach(picto => {
+                const btn = document.createElement('div');
+                btn.className = `tarjeta-picto cat-${picto.tipo}`;
+                btn.innerHTML = `
+                    <span class="emoji">${picto.emoji}</span>
+                    <span class="label">${picto.texto}</span>
+                `;
+                btn.onclick = () => agregarAFrase(picto);
+                tablero.appendChild(btn);
+            });
+        }
+
+        function agregarAFrase(picto) {
+            const textoParaVoz = picto.hablar ? picto.hablar : picto.texto;
+            fraseAudio.push(textoParaVoz);
+            fraseVisual.push(picto);
+            actualizarVisualizador();
+        }
+
+        function actualizarVisualizador() {
+            const visualizador = document.getElementById('visualizador-frase');
+            visualizador.innerHTML = ''; 
+            fraseVisual.forEach(picto => {
+                const elemento = document.createElement('div');
+                elemento.className = 'picto-en-frase';
+                elemento.innerHTML = `<span>${picto.emoji}</span><small>${picto.texto}</small>`;
+                visualizador.appendChild(elemento);
+            });
+            visualizador.scrollTop = visualizador.scrollHeight;
+        }
+
+        function borrarFrase() {
+            fraseAudio = [];
+            fraseVisual = [];
+            actualizarVisualizador();
+        }
+
+        function reproducirFrase() {
+            if (fraseAudio.length === 0) return;
+            const textoCompleto = fraseAudio.join(" ");
+            const utterThis = new SpeechSynthesisUtterance(textoCompleto);
+            
+            if (vozSeleccionada) {
+                utterThis.voice = vozSeleccionada;
+            }
+            utterThis.lang = 'es-ES';
+            utterThis.rate = 0.9; 
+            synth.speak(utterThis);
+        }
+
+    </script>
+</body>
+</html>
